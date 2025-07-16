@@ -69,12 +69,17 @@ def analyze(symbol):
         return None
 
     first_15m = df_today.between_time("09:15", "09:30")
+
     if first_15m.empty:
         st.warning(f"⚠️ {symbol} me 9:15–9:30 candle nahi mili. Skip kar rahe hain.")
         return None
 
-    if first_15m['High'].isnull().all() or first_15m['Low'].isnull().all():
-        st.warning(f"⚠️ {symbol} ke 9:15–9:30 candle me High/Low NaN hai. Skip kar rahe hain.")
+    if 'High' not in first_15m.columns or 'Low' not in first_15m.columns:
+        st.warning(f"⚠️ {symbol} ke 9:15–9:30 candle me High/Low column missing hai. Skip kar rahe hain.")
+        return None
+
+    if first_15m['High'].dropna().empty or first_15m['Low'].dropna().empty:
+        st.warning(f"⚠️ {symbol} ke 9:15–9:30 candle me High/Low NaN ya empty hai. Skip kar rahe hain.")
         return None
 
     high_15m = float(first_15m['High'].dropna().max())
