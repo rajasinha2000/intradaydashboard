@@ -11,7 +11,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# ========== CONFIGURATION ==========
+# ========== CONFIG ==========
 st.set_page_config(page_title="Market Dashboard", layout="wide")
 st_autorefresh(interval=900000, key="refresh_15min")  # Auto-refresh every 15 mins
 st.title("📈 Intraday Breakout Screener with MACD (Live)")
@@ -45,7 +45,7 @@ def analyze(symbol):
     try:
         df_15m, df_day = fetch_data(symbol)
     except Exception as e:
-        st.error(f"Data fetch failed for {symbol}: {e}")
+        st.error(f"❌ {symbol} ka data fetch nahi hua: {e}")
         return None
 
     result = {
@@ -78,12 +78,15 @@ def analyze(symbol):
         st.warning(f"⚠️ {symbol} ke 9:15–9:30 candle me High/Low column missing hai. Skip kar rahe hain.")
         return None
 
-    if first_15m['High'].dropna().empty or first_15m['Low'].dropna().empty:
-        st.warning(f"⚠️ {symbol} ke 9:15–9:30 candle me High/Low NaN ya empty hai. Skip kar rahe hain.")
+    high_vals = first_15m['High'].dropna()
+    low_vals = first_15m['Low'].dropna()
+
+    if high_vals.empty or low_vals.empty:
+        st.warning(f"⚠️ {symbol} ke 9:15–9:30 candle me High/Low values missing hain. Skip kar rahe hain.")
         return None
 
-    high_15m = float(first_15m['High'].dropna().max())
-    low_15m = float(first_15m['Low'].dropna().min())
+    high_15m = float(high_vals.max())
+    low_15m = float(low_vals.min())
     current_price = float(df_today["Close"].iloc[-1])
     result["CMP"] = round(current_price, 2)
 
@@ -165,7 +168,7 @@ def send_email_alert(stock):
 # ========== MAIN ==========
 results = []
 
-with st.spinner("🔄 Fetching live data... Please wait..."):
+with st.spinner("🔄 Live data load ho raha hai..."):
     for stock in stock_list:
         res = analyze(stock)
         if res:
