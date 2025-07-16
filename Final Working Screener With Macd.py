@@ -45,7 +45,7 @@ def analyze(symbol):
     try:
         df_15m, df_day = fetch_data(symbol)
     except Exception as e:
-        print(f"Data fetch failed for {symbol}: {e}")
+        st.error(f"Data fetch failed for {symbol}: {e}")
         return None
 
     result = {
@@ -61,17 +61,26 @@ def analyze(symbol):
     }
 
     if df_15m.empty or df_day.empty:
+        st.warning(f"⚠️ Data empty for {symbol}")
         return None
 
     today_date = df_15m.index[-1].date()
     df_today = df_15m[df_15m.index.date == today_date]
-  first_15m = df_today.between_time("09:15", "09:30")
-  if first_15m.empty:
-    st.warning(f"⚠️ {symbol} me 9:15–9:30 candle nahi mili. Skip kar rahe hain.")
-    return None
-   if df_today.empty:
-    st.warning(f"⚠️ {symbol} me aaj ka data nahi mila.")
-    return None
+    if df_today.empty:
+        st.warning(f"⚠️ {symbol} me aaj ka data nahi mila.")
+        return None
+
+    first_15m = df_today.between_time("09:15", "09:30")
+    if first_15m.empty:
+        st.warning(f"⚠️ {symbol} me 9:15–9:30 candle nahi mili. Skip kar rahe hain.")
+        return None
+
+    # Debug info
+    st.write(f"🔍 {symbol} checked")
+    st.write("🕐 Last 5 timestamps:", df_15m.index[-5:])
+    st.write("📊 df_today shape:", df_today.shape)
+    st.write("🟨 first_15m shape:", first_15m.shape)
+
     high_15m = float(first_15m['High'].max())
     low_15m = float(first_15m['Low'].min())
     current_price = float(df_today["Close"].iloc[-1])
@@ -155,7 +164,6 @@ def send_email_alert(stock):
 # ========== MAIN ==========
 results = []
 for stock in stock_list:
-    print(f"Checking {stock}...")
     res = analyze(stock)
     if res:
         results.append(res)
