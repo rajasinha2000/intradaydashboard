@@ -11,7 +11,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-# ========== CONFIG ==========
+# ========== CONFIGURATION ==========
 st.set_page_config(page_title="Market Dashboard", layout="wide")
 st_autorefresh(interval=900000, key="refresh_15min")  # Auto-refresh every 15 mins
 st.title("📈 Intraday Breakout Screener with MACD (Live)")
@@ -45,7 +45,7 @@ def analyze(symbol):
     try:
         df_15m, df_day = fetch_data(symbol)
     except Exception as e:
-        st.error(f"❌ {symbol} ka data fetch nahi hua: {e}")
+        print(f"Data fetch failed for {symbol}: {e}")
         return None
 
     result = {
@@ -65,28 +65,13 @@ def analyze(symbol):
 
     today_date = df_15m.index[-1].date()
     df_today = df_15m[df_15m.index.date == today_date]
-    if df_today.empty:
-        return None
-
     first_15m = df_today.between_time("09:15", "09:30")
 
-    if first_15m.empty:
-        st.warning(f"⚠️ {symbol} me 9:15–9:30 candle nahi mili. Skip kar rahe hain.")
+    if first_15m.empty or df_today.empty:
         return None
 
-    if 'High' not in first_15m.columns or 'Low' not in first_15m.columns:
-        st.warning(f"⚠️ {symbol} ke 9:15–9:30 candle me High/Low column missing hai. Skip kar rahe hain.")
-        return None
-
-    high_vals = first_15m['High'].dropna()
-    low_vals = first_15m['Low'].dropna()
-
-    if high_vals.empty or low_vals.empty:
-        st.warning(f"⚠️ {symbol} ke 9:15–9:30 candle me High/Low values missing hain. Skip kar rahe hain.")
-        return None
-
-    high_15m = float(high_vals.max())
-    low_15m = float(low_vals.min())
+    high_15m = float(first_15m['High'].max())
+    low_15m = float(first_15m['Low'].min())
     current_price = float(df_today["Close"].iloc[-1])
     result["CMP"] = round(current_price, 2)
 
@@ -167,12 +152,11 @@ def send_email_alert(stock):
 
 # ========== MAIN ==========
 results = []
-
-with st.spinner("🔄 Live data load ho raha hai..."):
-    for stock in stock_list:
-        res = analyze(stock)
-        if res:
-            results.append(res)
+for stock in stock_list:
+    print(f"Checking {stock}...")
+    res = analyze(stock)
+    if res:
+        results.append(res)
 
 df_result = pd.DataFrame(results)
 
