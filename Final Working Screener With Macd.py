@@ -61,13 +61,11 @@ def analyze(symbol):
     }
 
     if df_15m.empty or df_day.empty:
-        st.warning(f"⚠️ Data empty for {symbol}")
         return None
 
     today_date = df_15m.index[-1].date()
     df_today = df_15m[df_15m.index.date == today_date]
     if df_today.empty:
-        st.warning(f"⚠️ {symbol} me aaj ka data nahi mila.")
         return None
 
     first_15m = df_today.between_time("09:15", "09:30")
@@ -75,14 +73,12 @@ def analyze(symbol):
         st.warning(f"⚠️ {symbol} me 9:15–9:30 candle nahi mili. Skip kar rahe hain.")
         return None
 
-    # Debug info
-    st.write(f"🔍 {symbol} checked")
-    st.write("🕐 Last 5 timestamps:", df_15m.index[-5:])
-    st.write("📊 df_today shape:", df_today.shape)
-    st.write("🟨 first_15m shape:", first_15m.shape)
+    if first_15m['High'].isnull().all() or first_15m['Low'].isnull().all():
+        st.warning(f"⚠️ {symbol} ke 9:15–9:30 candle me High/Low NaN hai. Skip kar rahe hain.")
+        return None
 
-    high_15m = float(first_15m['High'].max())
-    low_15m = float(first_15m['Low'].min())
+    high_15m = float(first_15m['High'].dropna().max())
+    low_15m = float(first_15m['Low'].dropna().min())
     current_price = float(df_today["Close"].iloc[-1])
     result["CMP"] = round(current_price, 2)
 
@@ -163,10 +159,12 @@ def send_email_alert(stock):
 
 # ========== MAIN ==========
 results = []
-for stock in stock_list:
-    res = analyze(stock)
-    if res:
-        results.append(res)
+
+with st.spinner("🔄 Fetching live data... Please wait..."):
+    for stock in stock_list:
+        res = analyze(stock)
+        if res:
+            results.append(res)
 
 df_result = pd.DataFrame(results)
 
