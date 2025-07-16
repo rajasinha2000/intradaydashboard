@@ -65,11 +65,13 @@ def analyze(symbol):
 
     today_date = df_15m.index[-1].date()
     df_today = df_15m[df_15m.index.date == today_date]
-    first_15m = df_today.between_time("09:15", "09:30")
-
-    if first_15m.empty or df_today.empty:
-        return None
-
+  first_15m = df_today.between_time("09:15", "09:30")
+  if first_15m.empty:
+    st.warning(f"⚠️ {symbol} me 9:15–9:30 candle nahi mili. Skip kar rahe hain.")
+    return None
+   if df_today.empty:
+    st.warning(f"⚠️ {symbol} me aaj ka data nahi mila.")
+    return None
     high_15m = float(first_15m['High'].max())
     low_15m = float(first_15m['Low'].min())
     current_price = float(df_today["Close"].iloc[-1])
