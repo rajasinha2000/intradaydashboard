@@ -23,7 +23,7 @@ stock_list = [
     "LT.NS", "SBIN.NS", "KOTAKBANK.NS", "AXISBANK.NS", "BSE.NS",
     "BHARTIARTL.NS", "TITAN.NS", "ASIANPAINT.NS", "OFSS.NS", "MARUTI.NS",
     "BOSCHLTD.NS", "TRENT.NS", "NESTLEIND.NS", "ULTRACEMCO.NS", "MCX.NS",
-    "CAMS.NS", "COFORGE.NS"
+    "CAMS.NS", "COFORGE.NS","HAL.NS","KEI.NS"
 ] + index_list
 
 # ========== FUNCTIONS ==========
@@ -150,6 +150,17 @@ def send_email_alert(stock):
     except Exception as e:
         print(f"❌ Email sending failed: {e}")
 
+# ========== TELEGRAM ALERT FUNCTION ==========
+def send_telegram_alert(message):
+    token = "7735892458:AAELFRclang2MgJwO2Rd9RRwNmoll1LzlFg"
+    chat_id = "5073531512"
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {"chat_id": chat_id, "text": message}
+    try:
+        requests.post(url, data=payload)
+    except:
+        pass
+
 # ========== MAIN ==========
 results = []
 for stock in stock_list:
@@ -170,7 +181,7 @@ if not df_result.empty and "Breakout Type" in df_result.columns:
     st.dataframe(df_result, use_container_width=True)
 
     csv = df_result.to_csv(index=False).encode("utf-8")
-    st.download_button("💾 Download Breakout CSV", data=csv, file_name="breakout_screener.csv", mime="text/csv")
+    st.download_button("📂 Download Breakout CSV", data=csv, file_name="breakout_screener.csv", mime="text/csv")
 
     EMAIL_LOG_FILE = "emailed_stocks.txt"
     def load_emailed_stocks():
@@ -203,7 +214,8 @@ if not df_result.empty and "Breakout Type" in df_result.columns:
 
         for row in double_breakouts.itertuples():
             if row.Stock not in emailed_stocks:
-                send_email_alert(row.Stock)
+#===            send_email_alert(row.Stock)
+                send_telegram_alert(f"🟢 DOUBLE BREAKOUT in {row.Stock} ✅ CMP: {row.CMP}")
                 save_emailed_stock(row.Stock)
                 emailed_stocks.add(row.Stock)
 
