@@ -20,7 +20,7 @@ st.title("📈 Intraday Breakout Screener with MACD (Live)")
 index_list = ["^NSEI", "^NSEBANK"]
 stock_list = [
     "RELIANCE.NS", "HDFCBANK.NS", "INFY.NS", "TCS.NS", "ICICIBANK.NS",
-    "LT.NS", "SBIN.NS", "KOTAKBANK.NS", "AXISBANK.NS", "BSE.NS",
+    "LT.NS", "SBIN.NS", "KOTAKBANK.NS", "AXISBANK.NS", "BSE.NS","SIEMENS.NS",
     "BHARTIARTL.NS", "TITAN.NS", "ASIANPAINT.NS", "OFSS.NS", "MARUTI.NS",
     "BOSCHLTD.NS", "TRENT.NS", "NESTLEIND.NS", "ULTRACEMCO.NS", "MCX.NS",
     "CAMS.NS", "COFORGE.NS","HAL.NS","KEI.NS"
