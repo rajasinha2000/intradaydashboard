@@ -23,7 +23,7 @@ stock_list = [
     "LT.NS", "SBIN.NS", "KOTAKBANK.NS", "AXISBANK.NS", "BSE.NS","SIEMENS.NS",
     "BHARTIARTL.NS", "TITAN.NS", "ASIANPAINT.NS", "OFSS.NS", "MARUTI.NS",
     "BOSCHLTD.NS", "TRENT.NS", "NESTLEIND.NS", "ULTRACEMCO.NS", "MCX.NS",
-    "CAMS.NS", "COFORGE.NS","HAL.NS","KEI.NS"
+    "CAMS.NS", "COFORGE.NS","HAL.NS","KEI.NS","INDIGO.NS"
 ] + index_list
 
 # ========== FUNCTIONS ==========
@@ -227,3 +227,4 @@ if not df_result.empty and "Breakout Type" in df_result.columns:
             st.info("ℹ️ No email log file found.")
 else:
     st.warning("⚠️ No valid breakout data found.")
+
