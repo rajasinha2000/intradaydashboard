@@ -19,11 +19,8 @@ st.title("📈 Intraday Breakout Screener with MACD (Live)")
 # ========== STOCK LIST ==========
 index_list = ["^NSEI", "^NSEBANK"]
 stock_list = [
-    "RELIANCE.NS", "HDFCBANK.NS", "INFY.NS", "TCS.NS", "ICICIBANK.NS",
-    "LT.NS", "SBIN.NS", "KOTAKBANK.NS", "AXISBANK.NS", "BSE.NS","SIEMENS.NS",
-    "BHARTIARTL.NS", "TITAN.NS", "BAJAJ-AUTO.NS", "OFSS.NS", "MARUTI.NS",
-    "BOSCHLTD.NS", "TRENT.NS", "NESTLEIND.NS", "ULTRACEMCO.NS", "MCX.NS",
-    "CAMS.NS", "COFORGE.NS","HAL.NS","KEI.NS","INDIGO.NS"
+    "RELIANCE.NS", "HDFCBANK.NS","ICICIBANK.NS","LT.NS","BSE.NS","BAJAJ-AUTO.NS", "OFSS.NS","MARUTI.NS",
+    "TRENT.NS","ULTRACEMCO.NS","CAMS.NS","INDIGO.NS"
 ] + index_list
 
 # ========== FUNCTIONS ==========
@@ -227,5 +224,6 @@ if not df_result.empty and "Breakout Type" in df_result.columns:
             st.info("ℹ️ No email log file found.")
 else:
     st.warning("⚠️ No valid breakout data found.")
+
 
 
